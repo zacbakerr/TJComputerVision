@@ -1,6 +1,6 @@
 
 # Computer Vision
-The labs I completed as part of the computer vision course I took during my senior year of high school
+The labs I completed as part of the computer vision course I took during my senior year of high school.
 
 ### Lab 1: The Basics
 - Create a triangle
