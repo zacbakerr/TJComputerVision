@@ -6,6 +6,8 @@
 #include <tuple>
 #include <ctime>
 #include <fstream>
+#include <string>
+#include <iomanip>
 
 using namespace std;
 
@@ -70,49 +72,49 @@ void part1() {
 
 void placePointOnCircle(int (*pixels)[800][3], int ix, int iy, int x, int y) {
   for (int k = 0; k < 3; k++) {
-    if ((iy + y) >= 0 and (ix + x) >= 0 and (iy + y) < 800 and (ix + x) < 800) {
+    if ((iy + y) >= 0 && (ix + x) >= 0 && (iy + y) < 800 && (ix + x) < 800) {
       pixels[iy+y][ix+x][k] = 0;
     }
   }
   for (int k = 0; k < 3; k++) {
-    if ((iy + y) >= 0 and (ix - x) >= 0 and (iy + y) < 800 and (ix - x) < 800) {
+    if ((iy + y) >= 0 && (ix - x) >= 0 && (iy + y) < 800 && (ix - x) < 800) {
       pixels[iy+y][ix-x][k] = 0;
     }
   }
   for (int k = 0; k < 3; k++) {
-    if ((iy - y) >= 0 and (ix + x) >= 0 and (iy - y) < 800 and (ix + x) < 800) {
+    if ((iy - y) >= 0 && (ix + x) >= 0 && (iy - y) < 800 && (ix + x) < 800) {
       pixels[iy-y][ix+x][k] = 0;
     }
   }
   for (int k = 0; k < 3; k++) {
-    if ((iy - y) >= 0 and (ix - x) >= 0 and (iy - y) < 800 and (ix - x) < 800) {
+    if ((iy - y) >= 0 && (ix - x) >= 0 && (iy - y) < 800 && (ix - x) < 800) {
       pixels[iy-y][ix-x][k] = 0;
     }
   }
   for (int k = 0; k < 3; k++) {
-    if ((iy + x) >= 0 and (ix + y) >= 0 and (iy + x) < 800 and (ix + y) < 800) {
+    if ((iy + x) >= 0 && (ix + y) >= 0 && (iy + x) < 800 && (ix + y) < 800) {
       pixels[iy+x][ix+y][k] = 0;
     }
   }
   for (int k = 0; k < 3; k++) {
-    if ((iy + x) >= 0 and (ix - y) >= 0 and (iy + x) < 800 and (ix - y) < 800) {
+    if ((iy + x) >= 0 && (ix - y) >= 0 && (iy + x) < 800 && (ix - y) < 800) {
       pixels[iy+x][ix-y][k] = 0;
     }
   }
   for (int k = 0; k < 3; k++) {
-    if ((iy - x) >= 0 and (ix + y) >= 0 and (iy - x) < 800 and (ix + y) < 800) {
+    if ((iy - x) >= 0 && (ix + y) >= 0 && (iy - x) < 800 && (ix + y) < 800) {
       pixels[iy-x][ix+y][k] = 0;
     }
   }
   for (int k = 0; k < 3; k++) {
-    if ((iy - x) >= 0 and (ix - y) >= 0 and (iy - x) < 800 and (ix - y) < 800) {
+    if ((iy - x) >= 0 && (ix - y) >= 0 && (iy - x) < 800 && (ix - y) < 800) {
       pixels[iy-x][ix-y][k] = 0;
     }
   }
 }
 
 void lineFromSlope(int (*pixels)[800][3], int x, int y, double rise, double run) {  
-  if (rise/run > 0 and abs(run) > abs(rise)) {
+  if (rise/run > 0 && abs(run) > abs(rise)) {
     int j = y;
     int e = abs(rise) - abs(run);
     for (int i = x; i < 800; i++) {
@@ -142,7 +144,7 @@ void lineFromSlope(int (*pixels)[800][3], int x, int y, double rise, double run)
       }
       e += abs(rise);
     }
-  } else if ((rise/run) > 0 and abs(run) < abs(rise)) {
+  } else if ((rise/run) > 0 && abs(run) < abs(rise)) {
     int j = x;
     int e = abs(run) - abs(rise);
     for (int i = y; i < 800; i++) {
@@ -173,7 +175,7 @@ void lineFromSlope(int (*pixels)[800][3], int x, int y, double rise, double run)
       e += abs(run);
     }
       
-  } else if ((rise/run) < 0 and abs(run) > abs(rise)) {
+  } else if ((rise/run) < 0 && abs(run) > abs(rise)) {
     int j = y;
     int e = abs(rise) - abs(run);
     for (int i = x; i >= 0; i--) {
@@ -203,7 +205,7 @@ void lineFromSlope(int (*pixels)[800][3], int x, int y, double rise, double run)
       }
       e += abs(rise);
     }
-  } else if ((rise/run) < 0 and abs(run) < abs(rise)) {
+  } else if ((rise/run) < 0 && abs(run) < abs(rise)) {
     int j = x;
     int e = abs(run) - abs(rise);
     for (int i = y; i >= 0; i--) {
@@ -336,7 +338,7 @@ void part2() {
   double pointsX[4];
   double pointsY[4];
   
-  // split each point into x and y
+  // split each point into x && y
   for (int i = 0; i < 4; i++) {
     int split = points[i].find(",");
 
@@ -396,7 +398,7 @@ void part2() {
       intersectionY= slope1*(intersectionX-newX)+newY;
       lineFromSlope(pixels, round(pointsX[0]*800), round(pointsY[0]*800), round(intersectionY*800-pointsY[0]*800), round(intersectionX*800-pointsX[0]*800));
 
-      // calulate intersection of line 1 and line 2
+      // calulate intersection of line 1 && line 2
       double b1 = pointsY[q]*800 - slope1*pointsX[q]*800;
       double b2 = pointsY[0]*800 - slope2*pointsX[0]*800;  
       double intersectionX1 = (b2-b1)/(slope1-slope2);
@@ -409,7 +411,7 @@ void part2() {
       intersectionY = slope1*(intersectionX-newX)+newY;
       lineFromSlope(pixels, round(pointsX[z]*800), round(pointsY[z]*800), round(intersectionY*800-pointsY[z]*800), round(intersectionX*800-pointsX[z]*800)); 
 
-      // calulate intersection of line 1 and line 3
+      // calulate intersection of line 1 && line 3
       b1 = pointsY[q]*800 - slope1*pointsX[q]*800;
       b2 = pointsY[z]*800 - slope2*pointsX[z]*800;
       double intersectionX2 = ((b2-b1)/(slope1-slope2));
@@ -426,13 +428,13 @@ void part2() {
       cout << pointsX[p]*800 << " " << pointsY[p]*800 << endl;
       lineFromSlope(pixels, round(pointsX[p]*800), round(pointsY[p]*800), round(intersectionY*800-pointsY[p]*800), round(intersectionX*800-pointsX[p]*800)); 
 
-      // calulate intersection of line 2 and line 4
+      // calulate intersection of line 2 && line 4
       b1 = pointsY[0]*800 - slope1*pointsX[0]*800;
       b2 = pointsY[p]*800 - slope2*pointsX[p]*800;
       double intersectionX3 = (b2-b1)/(slope1-slope2);
       double intersectionY3 = slope1*intersectionX3+b1;
 
-      // calulate intersection of line 3 and line 4
+      // calulate intersection of line 3 && line 4
       b1 = pointsY[z]*800 - slope1*pointsX[z]*800;
       b2 = pointsY[p]*800 - slope2*pointsX[p]*800;
       double intersectionX4 = (b2-b1)/(slope1-slope2);
@@ -568,7 +570,7 @@ void part2() {
   intersectionY= slope1*(intersectionX-newX)+newY;
   lineFromSlope(pixels, round(pointsX[0]*800), round(pointsY[0]*800), round(intersectionY*800-pointsY[0]*800), round(intersectionX*800-pointsX[0]*800));
 
-  // calulate intersection of line 1 and line 2
+  // calulate intersection of line 1 && line 2
   double b1 = pointsY[q]*800 - slope1*pointsX[q]*800;
   double b2 = pointsY[0]*800 - slope2*pointsX[0]*800;  
   double intersectionX1 = (b2-b1)/(slope1-slope2);
@@ -581,7 +583,7 @@ void part2() {
   intersectionY = slope1*(intersectionX-newX)+newY;
   lineFromSlope(pixels, round(pointsX[z]*800), round(pointsY[z]*800), round(intersectionY*800-pointsY[z]*800), round(intersectionX*800-pointsX[z]*800)); 
 
-  // calulate intersection of line 1 and line 3
+  // calulate intersection of line 1 && line 3
   b1 = pointsY[q]*800 - slope1*pointsX[q]*800;
   b2 = pointsY[z]*800 - slope2*pointsX[z]*800;
   int intersectionX2 = round((b2-b1)/(slope1-slope2));
@@ -594,13 +596,13 @@ void part2() {
   intersectionY = slope1*(intersectionX-newX)+newY;
   lineFromSlope(pixels, round(pointsX[p]*800), round(pointsY[p]*800), round(intersectionY*800-pointsY[p]*800), round(intersectionX*800-pointsX[p]*800)); 
 
-  // calulate intersection of line 2 and line 4
+  // calulate intersection of line 2 && line 4
   b1 = pointsY[0]*800 - slope1*pointsX[0]*800;
   b2 = pointsY[p]*800 - slope2*pointsX[p]*800;
   double intersectionX3 = (b2-b1)/(slope1-slope2);
   double intersectionY3 = slope1*intersectionX3+b1;
 
-  // calulate intersection of line 3 and line 4
+  // calulate intersection of line 3 && line 4
   b1 = pointsY[z]*800 - slope1*pointsX[z]*800;
   b2 = pointsY[p]*800 - slope2*pointsX[p]*800;
   double intersectionX4 = (b2-b1)/(slope1-slope2);
