@@ -1,7 +1,57 @@
 #include <fstream>
 #include <iostream>
+#include <vector>
+#include <cmath>
 
 using namespace std;
+
+vector<vector<int>> greyScale(vector<vector<vector<int>>> pixels) {
+  vector<vector<int>> pixelsGrey;
+  for (int i = 0; i < pixels.size(); i++) {
+    vector<int> row;
+    pixelsGrey.push_back(row);
+    for (int j = 0; j < pixels[i].size(); j++){
+      int grey = 0.2126 * pixels[i][j][0] + 0.7152 * pixels[i][j][1] + 0.0722 * pixels[i][j][2];
+      pixelsGrey[i].push_back(grey);
+    }
+  }
+  return pixelsGrey;
+}
+
+vector<vector<int>> sobelOperator(vector<vector<int>> pixelsGrey) {
+  vector<vector<int>> pixelsSobelX;
+  pixelsSobelX = pixelsGrey;
+  for (int i = 0; i < pixelsGrey.size(); i++) {
+    for (int j = 0; j < pixelsGrey[i].size(); j++){
+      if (i == 0 || j == 0 || i == pixelsGrey.size() - 1 || j == pixelsGrey[i].size() - 1) {
+        pixelsSobelX[i][j] = 0;
+      } else {
+        int sobel = (pixelsGrey[i-1][j-1] * -1) + (pixelsGrey[i][j-1] * -2) + (pixelsGrey[i+1][j-1] * -1) + (pixelsGrey[i-1][j+1] * 1) + (pixelsGrey[i][j+1] * 2) + (pixelsGrey[i+1][j+1] * 1);
+        pixelsSobelX[i][j] = sobel;
+      }
+    }
+  }
+  vector<vector<int>> pixelsSobelY;
+  pixelsSobelY = pixelsGrey;
+  for (int i = 0; i < pixelsGrey.size(); i++) {
+    for (int j = 0; j < pixelsGrey[i].size(); j++){
+      if (i == 0 || j == 0 || i == pixelsGrey.size() - 1 || j == pixelsGrey[i].size() - 1) {
+        pixelsSobelY[i][j] = 0;
+      } else {
+        int sobel = (pixelsGrey[i-1][j-1] * -1) + (pixelsGrey[i-1][j] * -2) + (pixelsGrey[i-1][j+1] * -1) + (pixelsGrey[i+1][j-1] * 1) + (pixelsGrey[i+1][j] * 2) + (pixelsGrey[i+1][j+1] * 1);
+        pixelsSobelY[i][j] = sobel;
+      }
+    }
+  }
+  vector<vector<int>> pixelsSobel;
+  pixelsSobel = pixelsGrey;
+  for (int i = 0; i < pixelsGrey.size(); i++) {
+    for (int j = 0; j < pixelsGrey[i].size(); j++){
+      pixelsSobel[i][j] = sqrt(pow(pixelsSobelX[i][j], 2) + pow(pixelsSobelY[i][j], 2));
+    }
+  }
+  return pixelsSobel;
+}
 
 void part1() {
   FILE* ppmfile;
@@ -13,42 +63,42 @@ void part1() {
   int widthcounter = 0;
   int heightcounter = 0;
 
-  int pixels[400][400][3];
-  // int pixelsgrey[400][400][3];
+  vector<vector<vector<int>>> pixels;
 
-  int r, g, b;
-  while (fscanf(ppmfile, "%d %d %d", &r, &g, &b) != EOF) {
-    pixels[heightcounter][widthcounter][0] = r;
-    pixels[heightcounter][widthcounter][1] = g;
-    pixels[heightcounter][widthcounter][2] = b;
-    widthcounter++;
-    if (widthcounter == width) {
-      widthcounter = 0;
-      heightcounter++;
+  for (int i = 0; i < height; i++) {
+    vector<vector<int>> row;
+    pixels.push_back(row);
+    for (int j = 0; j < width; j++){
+      vector<int> pixel;
+      pixels[i].push_back(pixel);
+      for (int k = 0; k < 3; k++) {
+        int value;
+        fscanf(ppmfile, "%d", &value);
+        pixels[i][j].push_back(value);
+      }
     }
   }
   
-  for (int i = 0; i < height; i++) {
-    for (int j = 0; j < width; j++){
-      int grey = 0.2126 * pixels[i][j][0] + 0.7152 * pixels[i][j][1] + 0.0722 * pixels[i][j][2];
-      pixels[i][j][0] = grey;
-      pixels[i][j][1] = grey;
-      pixels[i][j][2] = grey;
-    }
-  }
+  vector<vector<int>> pixelsGrey = greyScale(pixels);
+  vector<vector<int>> pixelsSobel = sobelOperator(pixelsGrey);
 
-  ofstream MyFile("imageg.ppm");
-  MyFile << "P3 " << width << " " << height << " " << maxval << endl;
+  ofstream GreyPPM("imageg.ppm");
+  GreyPPM << "P3 " << width << " " << height << " " << maxval << endl;
   for (int i = 0; i < height; i++) {
     for (int j = 0; j < width; j++){
-      // MyFile << pixelsgrey[i][j] << " " << pixelsgrey[i][j] << " " << pixelsgrey[i][j] << endl;
-      for (int k = 0; k < 3; k++) {
-        MyFile << pixels[i][j][k] << " ";
-      }
-      MyFile << endl;
+      GreyPPM << pixelsGrey[i][j] << " " << pixelsGrey[i][j] << " " << pixelsGrey[i][j] << endl;
     }
   }
-  MyFile.close();
+  GreyPPM.close();
+
+  ofstream SobelPPM("imagem.ppm");
+  SobelPPM << "P3 " << width << " " << height << " " << maxval << endl;
+  for (int i = 0; i < height; i++) {
+    for (int j = 0; j < width; j++){
+      SobelPPM << pixelsSobel[i][j] << " " << pixelsSobel[i][j] << " " << pixelsSobel[i][j] << endl;
+    }
+  }
+  SobelPPM.close();
 }
 
 int main() {

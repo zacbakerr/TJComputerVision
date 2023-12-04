@@ -2,6 +2,9 @@
     "C_Cpp.errorSquiggles": "enabled",
     "files.associations": {
         "iosfwd": "cpp",
-        "ostream": "cpp"
+        "ostream": "cpp",
+        "cmath": "cpp",
+        "vector": "cpp",
+        "iostream": "cpp"
     }
 }

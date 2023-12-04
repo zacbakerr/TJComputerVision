@@ -23,3 +23,8 @@ The labs I completed as part of the computer vision course I took during my seni
 - Given a list of points, generate a convex hull
      - Part 1: using (quickhull algorithm)[https://en.wikipedia.org/wiki/Quickhull]
      - Part 2: using (graham scan algorithm)[https://en.wikipedia.org/wiki/Graham_scan]
+
+### Lab 5: Canny Edge Detection
+- Part 1
+    - Convert image to greyscale using (algorithm) [https://en.wikipedia.org/wiki/Grayscale]
+    - Identify edges on image using (Sobel Operator)[https://en.wikipedia.org/wiki/Sobel_operator]
