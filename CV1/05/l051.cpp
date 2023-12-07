@@ -48,6 +48,11 @@ vector<vector<int>> sobelOperator(vector<vector<int>> pixelsGrey) {
   for (int i = 0; i < pixelsGrey.size(); i++) {
     for (int j = 0; j < pixelsGrey[i].size(); j++){
       pixelsSobel[i][j] = sqrt(pow(pixelsSobelX[i][j], 2) + pow(pixelsSobelY[i][j], 2));
+      if (pixelsSobel[i][j] < 275) {
+        pixelsSobel[i][j] = 0;
+      } else {
+        pixelsSobel[i][j] = 255;
+      }
     }
   }
   return pixelsSobel;
