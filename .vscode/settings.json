@@ -5,6 +5,10 @@
         "ostream": "cpp",
         "cmath": "cpp",
         "vector": "cpp",
-        "iostream": "cpp"
+        "iostream": "cpp",
+        "xhash": "cpp",
+        "xstring": "cpp",
+        "xtree": "cpp",
+        "fstream": "cpp"
     }
 }
