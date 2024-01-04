@@ -169,19 +169,17 @@ void part1() {
 }
 
 void part2(int argc, char* argv[]) {
-  int lowThreshold = 150;
-  int highThreshold = 200;
+  int lowThreshold = 75;
+  int highThreshold = 100;
   const char* inPPM = "image.ppm";
   const char* outPPM = "image1.ppm";
 
   for (int i = 0; i < argc; i++) {
-    if (argv[i] == "-f") { inPPM = argv[i+1]; }
-    if (argv[i] == "-lt") { lowThreshold = atoi(argv[i+1]); }
-    if (argv[i] == "-ht") { highThreshold = atoi(argv[i+1]); }
-    if (argv[i] == "-of") { outPPM = argv[i+1]; }
+    if (string(argv[i]) == "-f") { inPPM = argv[i+1]; }
+    if (string(argv[i]) == "-lt") { lowThreshold = atoi(argv[i+1]); }
+    if (string(argv[i]) == "-ht") { highThreshold = atoi(argv[i+1]); }
+    if (string(argv[i]) == "-of") { outPPM = argv[i+1]; }
   }
-
-  cout << inPPM << endl;
 
   FILE* ppmfile;
   ppmfile = fopen(inPPM, "rb");
@@ -209,7 +207,7 @@ void part2(int argc, char* argv[]) {
   }
 
   vector<vector<int>> pixelsGrey = greyScale(pixels);
-  vector<vector<int>> pixelsCanny = hysteresisAlgorithm(pixelsGrey, 150, 200);
+  vector<vector<int>> pixelsCanny = hysteresisAlgorithm(pixelsGrey, lowThreshold, highThreshold);
   set<int> seen = {};
   vector<vector<int>> pixelsRecurCanny = hysteresisAlgorithmRecursion(pixelsCanny, seen);
 
@@ -224,6 +222,6 @@ void part2(int argc, char* argv[]) {
 }
 
 int main(int argc, char* argv[]) {
-  part1();
+  // part1();
   part2(argc, argv);
 }

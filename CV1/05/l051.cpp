@@ -50,9 +50,9 @@ vector<vector<int>> sobelOperator(vector<vector<int>> pixelsGrey) {
       pixelsSobel[i][j] = sqrt(pow(pixelsSobelX[i][j], 2) + pow(pixelsSobelY[i][j], 2));
 
       if (pixelsSobel[i][j] < 160) {
-        pixelsSobel[i][j] = 0;
-      } else {
         pixelsSobel[i][j] = 255;
+      } else {
+        pixelsSobel[i][j] = 0;
       }
     }
   }
