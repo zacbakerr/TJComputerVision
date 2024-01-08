@@ -28,3 +28,5 @@ The labs I completed as part of the computer vision course I took during my seni
 - Part 1
     - Convert image to greyscale using (algorithm) [https://en.wikipedia.org/wiki/Grayscale]
     - Identify edges on image using (Sobel Operator)[https://en.wikipedia.org/wiki/Sobel_operator]
+- Part 2
+    - 
