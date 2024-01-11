@@ -8,10 +8,10 @@ using namespace std;
 
 vector<vector<int>> greyScale(vector<vector<vector<int>>> pixels) {
   vector<vector<int>> pixelsGrey;
-  for (int i = 0; i < pixels.size(); i++) {
+  for (int i = 0; i < (int)pixels.size(); i++) {
     vector<int> row;
     pixelsGrey.push_back(row);
-    for (int j = 0; j < pixels[i].size(); j++){
+    for (int j = 0; j < (int)pixels[i].size(); j++){
       int grey = 0.2126 * pixels[i][j][0] + 0.7152 * pixels[i][j][1] + 0.0722 * pixels[i][j][2];
       pixelsGrey[i].push_back(grey);
     }
@@ -22,9 +22,9 @@ vector<vector<int>> greyScale(vector<vector<vector<int>>> pixels) {
 vector<vector<int>> sobelOperatorX(vector<vector<int>> pixelsGrey) {
   vector<vector<int>> pixelsSobelX;
   pixelsSobelX = pixelsGrey;
-  for (int i = 0; i < pixelsGrey.size(); i++) {
-    for (int j = 0; j < pixelsGrey[i].size(); j++){
-      if (i == 0 || j == 0 || i == pixelsGrey.size() - 1 || j == pixelsGrey[i].size() - 1) {
+  for (int i = 0; i < (int)pixelsGrey.size(); i++) {
+    for (int j = 0; j < (int)pixelsGrey[i].size(); j++){
+      if (i == 0 || j == 0 || i == (int)pixelsGrey.size() - 1 || j == (int)pixelsGrey[i].size() - 1) {
         pixelsSobelX[i][j] = 0;
       } else {
         int sobel = (pixelsGrey[i-1][j-1] * -1) + (pixelsGrey[i][j-1] * -2) + (pixelsGrey[i+1][j-1] * -1) + (pixelsGrey[i-1][j+1] * 1) + (pixelsGrey[i][j+1] * 2) + (pixelsGrey[i+1][j+1] * 1);
@@ -38,9 +38,9 @@ vector<vector<int>> sobelOperatorX(vector<vector<int>> pixelsGrey) {
 vector<vector<int>> sobelOperatorY(vector<vector<int>> pixelsGrey) {
   vector<vector<int>> pixelsSobelY;
   pixelsSobelY = pixelsGrey;
-  for (int i = 0; i < pixelsGrey.size(); i++) {
-    for (int j = 0; j < pixelsGrey[i].size(); j++){
-      if (i == 0 || j == 0 || i == pixelsGrey.size() - 1 || j == pixelsGrey[i].size() - 1) {
+  for (int i = 0; i < (int)pixelsGrey.size(); i++) {
+    for (int j = 0; j < (int)pixelsGrey[i].size(); j++){
+      if (i == 0 || j == 0 || i == (int)pixelsGrey.size() - 1 || j == (int)pixelsGrey[i].size() - 1) {
         pixelsSobelY[i][j] = 0;
       } else {
         int sobel = (pixelsGrey[i-1][j-1] * -1) + (pixelsGrey[i-1][j] * -2) + (pixelsGrey[i-1][j+1] * -1) + (pixelsGrey[i+1][j-1] * 1) + (pixelsGrey[i+1][j] * 2) + (pixelsGrey[i+1][j+1] * 1);
@@ -54,9 +54,9 @@ vector<vector<int>> sobelOperatorY(vector<vector<int>> pixelsGrey) {
 vector<vector<int>> sobelOperatorMagnitude(vector<vector<int>> pixelsGrey) {
   vector<vector<int>> pixelsSobelX = sobelOperatorX(pixelsGrey);
   vector<vector<int>> pixelsSobelY = sobelOperatorY(pixelsGrey);
-  vector<vector<int>> pixelsSobel(pixelsGrey.size(), vector<int>(pixelsGrey[0].size(), 0));
-  for (int i = 0; i < pixelsGrey.size(); i++) {
-    for (int j = 0; j < pixelsGrey[i].size(); j++) {
+  vector<vector<int>> pixelsSobel((int)pixelsGrey.size(), vector<int>((int)pixelsGrey[0].size(), 0));
+  for (int i = 0; i < (int)pixelsGrey.size(); i++) {
+    for (int j = 0; j < (int)pixelsGrey[i].size(); j++) {
       pixelsSobel[i][j] = sqrt(pow(pixelsSobelX[i][j], 2) + pow(pixelsSobelY[i][j], 2));
     }
   }
@@ -66,9 +66,9 @@ vector<vector<int>> sobelOperatorMagnitude(vector<vector<int>> pixelsGrey) {
 vector<vector<double>> sobelOperatorDirection(vector<vector<int>> pixelsGrey) {
   vector<vector<int>> pixelsSobelX = sobelOperatorX(pixelsGrey);
   vector<vector<int>> pixelsSobelY = sobelOperatorY(pixelsGrey);
-  vector<vector<double>> pixelsDirection(pixelsGrey.size(), vector<double>(pixelsGrey[0].size(), 0.0));
-  for (int i = 0; i < pixelsGrey.size(); i++) {
-    for (int j = 0; j < pixelsGrey[i].size(); j++) {
+  vector<vector<double>> pixelsDirection((int)pixelsGrey.size(), vector<double>((int)pixelsGrey[0].size(), 0.0));
+  for (int i = 0; i < (int)pixelsGrey.size(); i++) {
+    for (int j = 0; j < (int)pixelsGrey[i].size(); j++) {
       pixelsDirection[i][j] = atan2(pixelsSobelY[i][j], pixelsSobelX[i][j]);
     }
   }
@@ -77,8 +77,8 @@ vector<vector<double>> sobelOperatorDirection(vector<vector<int>> pixelsGrey) {
 
 vector<vector<int>> hysteresisAlgorithmRecursion(vector<vector<int>> pixels, set<int> seen) {
   bool done = false;
-  for (int i = 0; i < pixels.size(); i++) {
-    for (int j = 0; j < pixels[i].size(); j++) {
+  for (int i = 0; i < (int)pixels.size(); i++) {
+    for (int j = 0; j < (int)pixels[i].size(); j++) {
       int ind = i*j + j;
       if ((pixels[i][j] == 2) && !(seen.find(ind) != seen.end())) {
         if (pixels[i+1][j] == 1) { pixels[i+1][j] == 2; }
@@ -93,8 +93,8 @@ vector<vector<int>> hysteresisAlgorithmRecursion(vector<vector<int>> pixels, set
   if (done == false) {
     return hysteresisAlgorithmRecursion(pixels, seen);
   } else {
-    for (int i = 0; i < pixels.size(); i++) {
-      for (int j = 0; j < pixels[i].size(); j++) {
+    for (int i = 0; i < (int)pixels.size(); i++) {
+      for (int j = 0; j < (int)pixels[i].size(); j++) {
         if (pixels[i][j] == 2) {
           pixels[i][j] = 255;
         } else {
@@ -111,8 +111,8 @@ vector<vector<int>> hysteresisAlgorithm(vector<vector<int>> pixelsGrey, int lowT
   vector<vector<int>> pixelsSobelY = sobelOperatorY(pixelsGrey);
   vector<vector<int>> pixelsSobel;
   pixelsSobel = pixelsGrey;
-  for (int i = 0; i < pixelsGrey.size(); i++) {
-    for (int j = 0; j < pixelsGrey[i].size(); j++) {
+  for (int i = 0; i < (int)pixelsGrey.size(); i++) {
+    for (int j = 0; j < (int)pixelsGrey[i].size(); j++) {
       pixelsSobel[i][j] = sqrt(pow(pixelsSobelX[i][j], 2) + pow(pixelsSobelY[i][j], 2));
       if (pixelsSobel[i][j] > highThreshold) {
         pixelsSobel[i][j] = 2;
@@ -127,19 +127,10 @@ vector<vector<int>> hysteresisAlgorithm(vector<vector<int>> pixelsGrey, int lowT
 }
 
 vector<vector<int>> nonMaximumSuppression(vector<vector<int>> magnitude, vector<vector<double>> direction) {
-  // for (int i = 0; i < direction.size(); i++) {
-  //   for (int j = 0; j < direction[i].size(); j++) {
-  //     cout << direction[i][j] << endl;
-  //   }
-  // }
   vector<vector<int>> nms = magnitude;
-  for (int i = 0; i < magnitude.size(); i++) {
-    for (int j = 0; j < magnitude[0].size(); j++) {
-      // cout << direction[i][j] << endl;
-      cout << j << " ";
-      if ((i == 0) || (j == 0) || (i == direction.size() - 1) || (j = direction[i].size() - 1)) {
-        nms[i][j] = 0;
-      } else if (((direction[i][j] >= (acos(-1)/8)) && (direction[i][j] < ((3*acos(-1))/8))) || ((direction[i][j] >= -((7*acos(-1)/8))) && (direction[i][j] < ((5*acos(-1))/4)))) { 
+  for (int i = 1; i < (int)magnitude.size() - 1; i++) {
+    for (int j = 1; j < (int)magnitude[0].size() - 1; j++) {
+      if (((direction[i][j] >= (acos(-1)/8)) && (direction[i][j] < ((3*acos(-1))/8))) || ((direction[i][j] >= -((7*acos(-1)/8))) && (direction[i][j] < ((5*acos(-1))/4)))) { 
         // direction[i][j] = acos(-1)/4; 
         if ((magnitude[i][j] >= magnitude[i-1][j-1]) && (magnitude[i][j] >= magnitude[i+1][j+1])) {
           nms[i][j] = 255;
@@ -169,8 +160,6 @@ vector<vector<int>> nonMaximumSuppression(vector<vector<int>> magnitude, vector<
         }
       } 
     }
-    cout << endl;
-    cout << i << endl;
   }
 
   return nms;
@@ -178,8 +167,8 @@ vector<vector<int>> nonMaximumSuppression(vector<vector<int>> magnitude, vector<
 
 vector<vector<int>> combinedHysteresisNMS(vector<vector<int>> nms, vector<vector<int>> hysteresis) {
   vector<vector<int>> combined = nms;
-  for (int i = 0; i < nms.size(); i++) {
-    for (int j = 0; j < nms[i].size(); j++) {
+  for (int i = 0; i < (int)nms.size(); i++) {
+    for (int j = 0; j < (int)nms[i].size(); j++) {
       if (nms[i][j] == 255 && hysteresis[i][j] == 255) {
         combined[i][j] = 255;
       } else {
@@ -196,9 +185,6 @@ void part1() {
   
   int width, height, maxval;
   fscanf(ppmfile, "P3\n%d %d %d\n", &width, &height, &maxval);
-
-  int widthcounter = 0;
-  int heightcounter = 0;
 
   vector<vector<vector<int>>> pixels;
 
@@ -257,9 +243,6 @@ void part2(int argc, char* argv[]) {
   int width, height, maxval;
   fscanf(ppmfile, "P3\n%d %d %d\n", &width, &height, &maxval);
 
-  int widthcounter = 0;
-  int heightcounter = 0;
-
   vector<vector<vector<int>>> pixels;
 
   for (int i = 0; i < height; i++) {
@@ -292,8 +275,8 @@ void part2(int argc, char* argv[]) {
 }
 
 void part3(int argc, char* argv[]) {
-  int lowThreshold = 0;
-  int highThreshold = 1;
+  int lowThreshold = 70;
+  int highThreshold = 140;
   const char* inPPM = "image.ppm";
   const char* outPPM = "image1.ppm";
   const char* greyOutPPM = "imageg.ppm";
@@ -315,9 +298,6 @@ void part3(int argc, char* argv[]) {
   
   int width, height, maxval;
   fscanf(ppmfile, "P3\n%d %d %d\n", &width, &height, &maxval);
-
-  int widthcounter = 0;
-  int heightcounter = 0;
 
   vector<vector<vector<int>>> pixels;
 
