@@ -9,6 +9,7 @@
         "xhash": "cpp",
         "xstring": "cpp",
         "xtree": "cpp",
-        "fstream": "cpp"
+        "fstream": "cpp",
+        "set": "cpp"
     }
 }
