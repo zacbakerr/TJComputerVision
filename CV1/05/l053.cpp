@@ -51,19 +51,29 @@ vector<vector<int>> sobelOperatorY(vector<vector<int>> pixelsGrey) {
   return pixelsSobelY;
 }
 
-vector<vector<int>> sobelOperator(vector<vector<int>> pixelsGrey) {
+vector<vector<int>> sobelOperatorMagnitude(vector<vector<int>> pixelsGrey) {
   vector<vector<int>> pixelsSobelX = sobelOperatorX(pixelsGrey);
   vector<vector<int>> pixelsSobelY = sobelOperatorY(pixelsGrey);
   vector<vector<int>> pixelsSobel;
-  vector<vector<int>> pixelsDirection;
   pixelsSobel = pixelsGrey;
   for (int i = 0; i < pixelsGrey.size(); i++) {
     for (int j = 0; j < pixelsGrey[i].size(); j++) {
       pixelsSobel[i][j] = sqrt(pow(pixelsSobelX[i][j], 2) + pow(pixelsSobelY[i][j], 2));
+    }
+  }
+  return pixelsSobel;
+}
+
+vector<vector<double>> sobelOperatorDirection(vector<vector<int>> pixelsGrey) {
+  vector<vector<int>> pixelsSobelX = sobelOperatorX(pixelsGrey);
+  vector<vector<int>> pixelsSobelY = sobelOperatorY(pixelsGrey);
+  vector<vector<double>> pixelsDirection;
+  for (int i = 0; i < pixelsGrey.size(); i++) {
+    for (int j = 0; j < pixelsGrey[i].size(); j++) {
       pixelsDirection[i][j] = atan2(pixelsSobelY[i][j], pixelsSobelX[i][j]);
     }
   }
-  return pixelsSobel, pixelsDirection;
+  return pixelsDirection;
 }
 
 vector<vector<int>> hysteresisAlgorithmRecursion(vector<vector<int>> pixels, set<int> seen) {
@@ -117,8 +127,25 @@ vector<vector<int>> hysteresisAlgorithm(vector<vector<int>> pixelsGrey, int lowT
   return pixelsSobel;
 }
 
-vector<vector<int>> nonMaximumSuppression(vector<vector<int>> pixels) {
-
+vector<vector<int>> nonMaximumSuppression(vector<vector<int>> magnitude, vector<vector<double>> direction) {
+  vector<vector<int>> nms = magnitude;
+  for (int i = 0; i < direction.size(); i++) {
+    for (int j = 0; j < direction[i].size(); j++) {
+      if ((i == 0) || (j == 0) || (i == direction.size() - 1) || (j = direction[i].size() - 1)) {
+        continue;
+      }
+      if (direction[i][j] >= -(acos(-1)/8) && direction[i][j] < (acos(-1)/8)) { 
+        direction[i][j] = 0; 
+      } 
+      else if (direction[i][j] >= (acos(-1)/8) && direction[i][j] < ((3*acos(-1))/8)) { direction[i][j] = acos(-1)/4; } 
+      else if (direction[i][j] >= ((3*acos(-1))/8) && direction[i][j] < ((5*acos(-1))/8)) { direction[i][j] = acos(-1)/2; } 
+      else if (direction[i][j] >= ((5*acos(-1))/8) && direction[i][j] < ((7*acos(-1))/8)) { direction[i][j] = (3*acos(-1))/4; } 
+      else if (direction[i][j] >= ((7*acos(-1))/8) || direction[i][j] < -((7*acos(-1))/8)) { direction[i][j] = acos(-1); }
+      else if (direction[i][j] >= -((3*acos(-1))/8) && direction[i][j] < -(acos(-1)/8)) { direction[i][j] = -acos(-1)/4; }
+      else if (direction[i][j] >= -((5*acos(-1))/8) && direction[i][j] < ((3*acos(-1))/8)) { direction[i][j] = -acos(-1)/2; }
+      else if (direction[i][j] >= -((7*acos(-1)/8))) { direction[i][j] = -(3*acos(-1))/4; }
+    }
+  }
 }
 
 void part1() {
@@ -148,7 +175,7 @@ void part1() {
   }
   
   vector<vector<int>> pixelsGrey = greyScale(pixels);
-  vector<vector<int>> pixelsSobel, vector<vector<int>> direction = sobelOperator(pixelsGrey);
+  vector<vector<int>> pixelsSobel = sobelOperatorMagnitude(pixelsGrey);
 
   ofstream GreyPPM("imageg.ppm");
   GreyPPM << "P3 " << width << " " << height << " " << maxval << endl;
@@ -267,19 +294,12 @@ void part3(int argc, char* argv[]) {
   }
 
   vector<vector<int>> pixelsGrey = greyScale(pixels);
+  vector<vector<int>> pixelsSobel = sobelOperatorMagnitude(pixelsGrey);
+  vector<vector<double>> pixelsDirection = sobelOperatorDirection(pixelsGrey);
   vector<vector<int>> pixelsCanny = hysteresisAlgorithm(pixelsGrey, lowThreshold, highThreshold);
-  set<int> seen = {};
-  vector<vector<int>> pixelsRecurCanny = hysteresisAlgorithmRecursion(pixelsCanny, seen);
+  vector<vector<int>> pixelsNMS = nonMaximumSuppression(pixelsSobel, pixelsDirection);
 
-  ofstream HysteresisPPM(outPPM);
-  HysteresisPPM << "P3 " << width << " " << height << " " << maxval << endl;
-  for (int i = 0; i < height; i++) {
-    for (int j = 0; j < width; j++){
-      HysteresisPPM << pixelsRecurCanny[i][j] << " " << pixelsRecurCanny[i][j] << " " << pixelsRecurCanny[i][j] << endl;
-    }
-  }
-  HysteresisPPM.close();
-  ofstream GreyPPM(greyOutPPM);
+  ofstream GreyPPM(outPPM);
   GreyPPM << "P3 " << width << " " << height << " " << maxval << endl;
   for (int i = 0; i < height; i++) {
     for (int j = 0; j < width; j++){
@@ -287,6 +307,15 @@ void part3(int argc, char* argv[]) {
     }
   }
   GreyPPM.close();
+
+  ofstream SobelPPM(greyOutPPM);
+  SobelPPM << "P3 " << width << " " << height << " " << maxval << endl;
+  for (int i = 0; i < height; i++) {
+    for (int j = 0; j < width; j++){
+      SobelPPM << pixelsCanny[i][j] << " " << pixelsCanny[i][j] << " " << pixelsCanny[i][j] << endl;
+    }
+  }
+  SobelPPM.close();
 }
 
 int main(int argc, char* argv[]) {
