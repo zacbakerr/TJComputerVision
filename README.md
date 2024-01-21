@@ -29,4 +29,6 @@ The labs I completed as part of the computer vision course I took during my seni
     - Convert image to greyscale using (algorithm) [https://en.wikipedia.org/wiki/Grayscale]
     - Identify edges on image using (Sobel Operator)[https://en.wikipedia.org/wiki/Sobel_operator]
 - Part 2
-    - 
+    - Implement the hysteresis algorithm with a low and high threshold
+- Part 3
+    - Implement non-max supression and hysteresis + non-max supression

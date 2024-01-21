@@ -1,8 +1,8 @@
 #include <fstream>
 #include <iostream>
 #include <vector>
-#include <cmath>
 #include <set>
+#include <cmath>
 
 using namespace std;
 
@@ -175,118 +175,18 @@ vector<vector<int>> combinedHysteresisNMS(vector<vector<int>> nms, vector<vector
   return combined;
 }
 
-void part1() {
-  FILE* ppmfile;
-  ppmfile = fopen("image.ppm", "rb");
-  
-  int width, height, maxval;
-  fscanf(ppmfile, "P3\n%d %d %d\n", &width, &height, &maxval);
-
-  vector<vector<vector<int>>> pixels;
-
-  for (int i = 0; i < height; i++) {
-    vector<vector<int>> row;
-    pixels.push_back(row);
-    for (int j = 0; j < width; j++){
-      vector<int> pixel;
-      pixels[i].push_back(pixel);
-      for (int k = 0; k < 3; k++) {
-        int value;
-        fscanf(ppmfile, "%d", &value);
-        pixels[i][j].push_back(value);
-      }
-    }
-  }
-  
-  vector<vector<int>> pixelsGrey = greyScale(pixels);
-  vector<vector<int>> pixelsSobel = sobelOperatorMagnitude(pixelsGrey);
-
-  ofstream GreyPPM("imageg.ppm");
-  GreyPPM << "P3 " << width << " " << height << " " << maxval << endl;
-  for (int i = 0; i < height; i++) {
-    for (int j = 0; j < width; j++){
-      GreyPPM << pixelsGrey[i][j] << " " << pixelsGrey[i][j] << " " << pixelsGrey[i][j] << endl;
-    }
-  }
-  GreyPPM.close();
-
-  ofstream SobelPPM("imagem.ppm");
-  SobelPPM << "P3 " << width << " " << height << " " << maxval << endl;
-  for (int i = 0; i < height; i++) {
-    for (int j = 0; j < width; j++){
-      SobelPPM << pixelsSobel[i][j] << " " << pixelsSobel[i][j] << " " << pixelsSobel[i][j] << endl;
-    }
-  }
-  SobelPPM.close();
-}
-
-void part2(int argc, char* argv[]) {
-  int lowThreshold = 75;
-  int highThreshold = 100;
-  const char* inPPM = "image.ppm";
-  const char* outPPM = "image1.ppm";
-
-  for (int i = 0; i < argc; i++) {
-    if (string(argv[i]) == "-f") { inPPM = argv[i+1]; }
-    if (string(argv[i]) == "-lt") { lowThreshold = atoi(argv[i+1]); }
-    if (string(argv[i]) == "-ht") { highThreshold = atoi(argv[i+1]); }
-    if (string(argv[i]) == "-of") { outPPM = argv[i+1]; }
-  }
-
-  FILE* ppmfile;
-  ppmfile = fopen(inPPM, "rb");
-  
-  int width, height, maxval;
-  fscanf(ppmfile, "P3\n%d %d %d\n", &width, &height, &maxval);
-
-  vector<vector<vector<int>>> pixels;
-
-  for (int i = 0; i < height; i++) {
-    vector<vector<int>> row;
-    pixels.push_back(row);
-    for (int j = 0; j < width; j++){
-      vector<int> pixel;
-      pixels[i].push_back(pixel);
-      for (int k = 0; k < 3; k++) {
-        int value;
-        fscanf(ppmfile, "%d", &value);
-        pixels[i][j].push_back(value);
-      }
-    }
-  }
-
-  vector<vector<int>> pixelsGrey = greyScale(pixels);
-  vector<vector<int>> pixelsCanny = hysteresisAlgorithm(pixelsGrey, lowThreshold, highThreshold);
-  set<int> seen = {};
-  vector<vector<int>> pixelsRecurCanny = hysteresisAlgorithmRecursion(pixelsCanny, seen);
-
-  ofstream CannyPPM(outPPM);
-  CannyPPM << "P3 " << width << " " << height << " " << maxval << endl;
-  for (int i = 0; i < height; i++) {
-    for (int j = 0; j < width; j++){
-      CannyPPM << pixelsRecurCanny[i][j] << " " << pixelsRecurCanny[i][j] << " " << pixelsRecurCanny[i][j] << endl;
-    }
-  }
-  CannyPPM.close();
-}
-
-void part3(int argc, char* argv[]) {
+void part1(int argc, char* argv[]) {
   int lowThreshold = 70;
   int highThreshold = 140;
   const char* inPPM = "image.ppm";
-  const char* outPPM = "image1.ppm";
-  const char* greyOutPPM = "imageg.ppm";
-  const char* nmsOutPPM = "image2.ppm";
   const char* finalOutPPM = "imagef.ppm";
+  int TC = 100;
 
   for (int i = 0; i < argc; i++) {
-    if (string(argv[i]) == "-f") { inPPM = argv[i+1]; }
-    if (string(argv[i]) == "-lt") { lowThreshold = atoi(argv[i+1]); }
-    if (string(argv[i]) == "-ht") { highThreshold = atoi(argv[i+1]); }
-    if (string(argv[i]) == "-of") { outPPM = argv[i+1]; }
-    if (string(argv[i]) == "-fg") { greyOutPPM = argv[i+1]; }
-    if (string(argv[i]) == "-f2") { nmsOutPPM = argv[i+1]; }
-    if (string(argv[i]) == "-ff") { finalOutPPM = argv[i+1]; }
+    if (string(argv[i]) == "-F") { inPPM = argv[i+1]; }
+    if (string(argv[i]) == "-L") { lowThreshold = atoi(argv[i+1]); }
+    if (string(argv[i]) == "-H") { highThreshold = atoi(argv[i+1]); }
+    if (string(argv[i]) == "-TC") { TC = atoi(argv[i+1]); }
   }
 
   FILE* ppmfile;
@@ -296,6 +196,8 @@ void part3(int argc, char* argv[]) {
   fscanf(ppmfile, "P3\n%d %d %d\n", &width, &height, &maxval);
 
   vector<vector<vector<int>>> pixels;
+
+  cout << "hello" << endl;
 
   for (int i = 0; i < height; i++) {
     vector<vector<int>> row;
@@ -320,33 +222,6 @@ void part3(int argc, char* argv[]) {
   vector<vector<int>> pixelsNMS = nonMaximumSuppression(pixelsSobel, pixelsDirection);
   vector<vector<int>> pixelsFinal = combinedHysteresisNMS(pixelsNMS, pixelsRecurCanny);
 
-  ofstream GreyPPM(greyOutPPM);
-  GreyPPM << "P3 " << width << " " << height << " " << maxval << endl;
-  for (int i = 0; i < height; i++) {
-    for (int j = 0; j < width; j++){
-      GreyPPM << pixelsGrey[i][j] << " " << pixelsGrey[i][j] << " " << pixelsGrey[i][j] << endl;
-    }
-  }
-  GreyPPM.close();
-
-  ofstream SobelPPM(outPPM);
-  SobelPPM << "P3 " << width << " " << height << " " << maxval << endl;
-  for (int i = 0; i < height; i++) {
-    for (int j = 0; j < width; j++){
-      SobelPPM << pixelsRecurCanny[i][j] << " " << pixelsRecurCanny[i][j] << " " << pixelsRecurCanny[i][j] << endl;
-    }
-  }
-  SobelPPM.close();
-
-  ofstream NMSPPM(nmsOutPPM);
-  NMSPPM << "P3 " << width << " " << height << " " << maxval << endl;
-  for (int i = 0; i < height; i++) {
-    for (int j = 0; j < width; j++){
-      NMSPPM << pixelsNMS[i][j] << " " << pixelsNMS[i][j] << " " << pixelsNMS[i][j] << endl;
-    }
-  }
-  NMSPPM.close();
-
   ofstream FinalPPM(finalOutPPM);
   FinalPPM << "P3 " << width << " " << height << " " << maxval << endl;
   for (int i = 0; i < height; i++) {
@@ -358,7 +233,5 @@ void part3(int argc, char* argv[]) {
 }
 
 int main(int argc, char* argv[]) {
-  // part1();
-  // part2(argc, argv);
-  part3(argc, argv);
+  part1(argc, argv);
 }
