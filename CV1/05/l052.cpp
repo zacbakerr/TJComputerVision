@@ -12,7 +12,8 @@ vector<vector<int>> greyScale(vector<vector<vector<int>>> pixels) {
     vector<int> row;
     pixelsGrey.push_back(row);
     for (int j = 0; j < pixels[i].size(); j++){
-      int grey = 0.2126 * pixels[i][j][0] + 0.7152 * pixels[i][j][1] + 0.0722 * pixels[i][j][2];
+      // int grey = 0.2126 * pixels[i][j][0] + 0.7152 * pixels[i][j][1] + 0.0722 * pixels[i][j][2];
+      int grey = (pixels[i][j][0] + pixels[i][j][1] + pixels[i][j][2]) / 3;
       pixelsGrey[i].push_back(grey);
     }
   }
@@ -169,8 +170,8 @@ void part1() {
 }
 
 void part2(int argc, char* argv[]) {
-  int lowThreshold = 75;
-  int highThreshold = 100;
+  int lowThreshold = 410;
+  int highThreshold = 600;
   const char* inPPM = "image.ppm";
   const char* outPPM = "image1.ppm";
 

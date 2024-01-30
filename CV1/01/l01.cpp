@@ -46,7 +46,6 @@ void bothBigger(int (*pixels)[800][3], double bigX, double bigY, double smallX, 
 }
 
 void lineFromSlope(int (*pixels)[800][3], int x, int y, double rise, double run) {  
-  // cout << rise/run << " " << abs(run) << " " << abs(rise) << endl;
   if (rise/run > 0 and abs(run) > abs(rise)) {
     int j = y;
     int e = abs(rise) - abs(run);
