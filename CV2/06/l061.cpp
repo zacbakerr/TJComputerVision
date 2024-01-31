@@ -180,14 +180,14 @@ vector<vector<int>> drawLine(vector<vector<int>> pixelsIn, int x, int y, double 
   int finalX = 0;
   int finalY = 0;
   if (x < pixels.size()/2) {
-    int finalX = x + acos(theta)*(pixels.size()/2);
+    int finalX = x + acos(theta)*(pixels.size()/10);
   } else {
-    int finalX = x - acos(theta)*(pixels.size()/2);
+    int finalX = x - acos(theta)*(pixels.size()/10);
   }
   if (y < pixels[0].size()/2) {
-    int finalY = y + asin(theta)*(pixels[0].size()/2);
+    int finalY = y + asin(theta)*(pixels[0].size()/10);
   } else {
-    int finalY = y - asin(theta)*(pixels[0].size()/2);
+    int finalY = y - asin(theta)*(pixels[0].size()/10);
   }
 
   int rise = finalY - y;
@@ -222,13 +222,13 @@ vector<vector<int>> drawLine(vector<vector<int>> pixelsIn, int x, int y, double 
   } else if ((rise/run) > 0 && abs(run) < abs(rise)) {
     int j = x;
     int e = abs(run) - abs(rise);
-    for (int i = y; i < pixels[0].size(); i++) {
+    for (int i = y; i < pixels.size(); i++) {
       pixels[i][j] = 0;
       if (e >= 0) {
         j += 1;
         e -= abs(rise);
       }
-      if (j >= pixels.size()) {
+      if (j >= pixels[0].size()) {
         break;
       }
       e += abs(run);
@@ -306,7 +306,7 @@ vector<vector<int>> centerDetection(vector<vector<int>> combined, vector<vector<
   for (int i = 1; i < (int)combined.size() - 1; i++) {
     for (int j = 1; j < (int)combined[0].size() - 1; j++) {
       if (combined[i][j] == 255) {
-        vector<vector<int>> combined = drawLine(combined, i, j, direction[i][j]);
+        combined = drawLine(combined, i, j, direction[i][j]);
       }
     }
   }
