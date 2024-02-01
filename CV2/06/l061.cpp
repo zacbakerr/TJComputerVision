@@ -12,7 +12,8 @@ vector<vector<int>> greyScale(vector<vector<vector<int>>> pixels) {
     vector<int> row;
     pixelsGrey.push_back(row);
     for (int j = 0; j < (int)pixels[i].size(); j++){
-      int grey = 0.2126 * pixels[i][j][0] + 0.7152 * pixels[i][j][1] + 0.0722 * pixels[i][j][2];
+      // int grey = 0.2126 * pixels[i][j][0] + 0.7152 * pixels[i][j][1] + 0.0722 * pixels[i][j][2];
+      int grey = (pixels[i][j][0] + pixels[i][j][1] + pixels[i][j][2])/3;
       pixelsGrey[i].push_back(grey);
     }
   }
@@ -177,27 +178,33 @@ vector<vector<int>> combinedHysteresisNMS(vector<vector<int>> nms, vector<vector
 
 vector<vector<int>> drawLine(vector<vector<int>> pixelsIn, int x, int y, double theta) {
   vector<vector<int>> pixels = pixelsIn;
+
+  // find another point on the line given an initial point and the angle
+  // int finalX = x + 1000;
+  // int finalY = y + 1000 * tan(theta);
   int finalX = 0;
   int finalY = 0;
-  if (x < pixels.size()/2) {
-    int finalX = x + acos(theta)*(pixels.size()/10);
-  } else {
-    int finalX = x - acos(theta)*(pixels.size()/10);
-  }
-  if (y < pixels[0].size()/2) {
-    int finalY = y + asin(theta)*(pixels[0].size()/10);
-  } else {
-    int finalY = y - asin(theta)*(pixels[0].size()/10);
-  }
 
-  int rise = finalY - y;
-  int run = finalX - x;
+  // cout << "x: " << x << " y: " << y << " finalX: " << finalX << " finalY: " << finalY << " maxX: " << pixels[0].size() << " maxY: " << pixels.size() << endl;
 
-  if (rise/run > 0 && abs(run) > abs(rise)) {
+  double rise = finalY - y;
+  double run = finalX - x;
+  if (run == 0) {
+    for (int i = 0; i < pixels.size(); i++) {
+      pixels[i][x] = 255;
+    }
+  } else if (rise == 0) {
+    for (int i = 0; i < pixels[0].size(); i++) {
+      pixels[y][i] = 255;
+    }
+  } else if (rise/run > 0 && abs(run) > abs(rise)) {
     int j = y;
     int e = abs(rise) - abs(run);
     for (int i = x; i < pixels[0].size(); i++) {
-      pixels[j][i] = 0;
+      if (j >= pixels.size()) {
+        break;
+      }
+      pixels[j][i] = 255;
       if (e >= 0) {
         j += 1;
         e -= abs(run);
@@ -209,7 +216,10 @@ vector<vector<int>> drawLine(vector<vector<int>> pixelsIn, int x, int y, double 
     }
     j = y;
     for (int i = x; i >= 0; i--) {
-      pixels[j][i] = 0;
+      if (j < 0) {
+        break;
+      }
+      pixels[j][i] = 255;
       if (e >= 0) {
         j -= 1;
         e -= abs(run);
@@ -223,7 +233,10 @@ vector<vector<int>> drawLine(vector<vector<int>> pixelsIn, int x, int y, double 
     int j = x;
     int e = abs(run) - abs(rise);
     for (int i = y; i < pixels.size(); i++) {
-      pixels[i][j] = 0;
+      if (j >= pixels[0].size()) {
+        break;
+      }
+      pixels[i][j] = 255;
       if (e >= 0) {
         j += 1;
         e -= abs(rise);
@@ -235,7 +248,10 @@ vector<vector<int>> drawLine(vector<vector<int>> pixelsIn, int x, int y, double 
     }
     j = x;
     for (int i = y; i >= 0; i--) {
-      pixels[i][j] = 0;
+      if (j < 0) {
+        break;
+      }
+      pixels[i][j] = 255;
       if (e >= 0) {
         j -= 1;
         e -= abs(rise);
@@ -250,7 +266,10 @@ vector<vector<int>> drawLine(vector<vector<int>> pixelsIn, int x, int y, double 
     int j = y;
     int e = abs(rise) - abs(run);
     for (int i = x; i >= 0; i--) {
-      pixels[j][i] = 0;
+      if (j >= pixels.size()) {
+        break;
+      }
+      pixels[j][i] = 255;
       if (e >= 0) {
         j += 1;
         e -= abs(run);
@@ -262,7 +281,10 @@ vector<vector<int>> drawLine(vector<vector<int>> pixelsIn, int x, int y, double 
     }
     j = y;
     for (int i = x; i < pixels[0].size(); i++) {
-      pixels[j][i] = 0;
+      if (j < 0) {
+        break;
+      }
+      pixels[j][i] = 255;
       if (e >= 0) {
         j -= 1;
         e -= abs(run);
@@ -276,7 +298,10 @@ vector<vector<int>> drawLine(vector<vector<int>> pixelsIn, int x, int y, double 
     int j = x;
     int e = abs(run) - abs(rise);
     for (int i = y; i >= 0; i--) {
-      pixels[i][j] = 0;
+      if (j >= pixels[0].size()) {
+        break;
+      }
+      pixels[i][j] = 255;
       if (e >= 0) {
         j += 1;
         e -= abs(rise);
@@ -288,7 +313,10 @@ vector<vector<int>> drawLine(vector<vector<int>> pixelsIn, int x, int y, double 
     }
     j = x;
     for (int i = y; i < pixels.size(); i++) {
-      pixels[i][j] = 0;
+      if (j < 0) {
+        break;
+      }
+      pixels[i][j] = 255;
       if (e >= 0) {
         j -= 1;
         e -= abs(rise);
@@ -298,19 +326,27 @@ vector<vector<int>> drawLine(vector<vector<int>> pixelsIn, int x, int y, double 
       }
       e += abs(run);
     }
+  } else {
+    cout << x << " " << y << " " << finalX << " " << finalY << " " << theta << endl;
+    // cout << rise << " " << run << endl;
+    // cout << (rise/run) << endl;
+    // cout << (abs(run)) << " " << (abs(rise)) << endl;
+    // cout << " " << endl;
   }
   return pixels;
 }
 
 vector<vector<int>> centerDetection(vector<vector<int>> combined, vector<vector<double>> direction) {
+  vector<vector<int>> pixels = combined;
   for (int i = 1; i < (int)combined.size() - 1; i++) {
     for (int j = 1; j < (int)combined[0].size() - 1; j++) {
       if (combined[i][j] == 255) {
-        combined = drawLine(combined, i, j, direction[i][j]);
+        pixels = drawLine(pixels, i, j, direction[i][j]);
       }
     }
   }
-  return combined;
+  // pixels = drawLine(pixels, 0, 0, 3.14159/4);
+  return pixels;
 }
 
 void part1(int argc, char* argv[]) {

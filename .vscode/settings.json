@@ -10,6 +10,7 @@
         "xstring": "cpp",
         "xtree": "cpp",
         "fstream": "cpp",
-        "set": "cpp"
+        "set": "cpp",
+        "cstdlib": "cpp"
     }
 }
