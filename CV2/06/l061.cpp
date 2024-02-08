@@ -179,238 +179,67 @@ vector<vector<int>> combinedHysteresisNMS(vector<vector<int>> nms, vector<vector
 vector<vector<int>> drawLine(vector<vector<int>> pixelsIn, int x0, int y0, double theta, vector<vector<int>> combined) {
   vector<vector<int>> pixels = pixelsIn;
 
-  // find another point on the line given an initial point and the angle
-  int x1 = x0 + 1000;
-  int y1 = y0 + 1000 * tan(theta);
+  int x1;
+  int y1;
 
-  int dx = abs(x1 - x0);
-  int dy = abs(y1 - y0);
-  int sx = (x0 < x1) ? 1 : -1;
-  int sy = (y0 < y1) ? 1 : -1;
-  int err = dx - dy;
+  if (theta > 0 && theta < acos(-1)/2) {
+    x1 = x0 - 1000;
+    y1 = y0 - 1000 * tan(theta);
+  } else if (theta > acos(-1)/2 && theta < acos(-1)) {
+    x1 = x0 + 1000;
+    y1 = y0 + 1000 * tan(theta);
+  } else if (theta < 0 && theta > -acos(-1)/2) {
+    x1 = x0 - 1000;
+    y1 = y0 - 1000 * tan(theta);
+  } else if (theta < -acos(-1)/2 && theta > -acos(-1)) {
+    x1 = x0 + 1000;
+    y1 = y0 + 1000 * tan(theta);
+  } else {
+    x1 = x0;
+    y1 = y0;
+  }
+
+
+  int run = abs(x1 - x0);
+  int rise = abs(y1 - y0);
+  int slopesignx = (x0 < x1) ? 1 : -1;
+  int slopesigny = (y0 < y1) ? 1 : -1;
+  int error = run - rise;
   int counter = 0;
 
   while (true) {
     if (x0 < 0 || x0 >= pixels[0].size() || y0 < 0 || y0 >= pixels.size()) {
       break;
     }
-    // if (combined[y0][x0] == 255 && counter > 10) {
-    //   break;
-    // }
-    pixels[y0][x0] = pixels[y0][x0] + 5;
+    if (combined[y0][x0] == 255 && counter != 0) {
+      break;
+    }
     if (x0 == x1 && y0 == y1) {
       break;
     }
-    int e2 = 2 * err;
-    if (e2 > -dy) { err -= dy; x0 += sx; }
-    if (e2 < dx) { err += dx; y0 += sy; }
-    counter += 1;
-  }
-
-  int y2 = y0 - 1000 * tan(theta);
-  int x2 = x0 - 1000;
-
-  dx = abs(x2 - x0);
-  dy = abs(y2 - y0);
-  sx = (x0 < x2) ? 1 : -1;
-  sy = (y0 < y2) ? 1 : -1;
-  err = dx - dy;
-  counter = 0;
-
-  while (true) {
-    if (x0 < 0 || x0 >= pixels[0].size() || y0 < 0 || y0 >= pixels.size()) {
-      break;
-    }
-    // if (combined[y0][x0] == 255 && counter > 10) {
-    //   break;
-    // }
     pixels[y0][x0] = pixels[y0][x0] + 5;
-    if (x0 == x2 && y0 == y2) {
-      break;
-    }
-    int e2 = 2 * err;
-    if (e2 > -dy) { err -= dy; x0 += sx; }
-    if (e2 < dx) { err += dx; y0 += sy; }
+    int e2 = 2 * error;
+    if (e2 > -rise) { error -= rise; x0 += slopesignx; }
+    if (e2 < run) { error += run; y0 += slopesigny; }
     counter += 1;
   }
 
   return pixels;
 }
 
-// vector<vector<int>> drawLine(vector<vector<int>> pixelsIn, int x, int y, double theta) {
-//   vector<vector<int>> pixels = pixelsIn;
-
-//   // find another point on the line given an initial point and the angle
-//   // int finalX = x + 1000;
-//   // int finalY = y + 1000 * tan(theta);
-//   int finalX = 0;
-//   int finalY = 0;
-
-//   // cout << "x: " << x << " y: " << y << " finalX: " << finalX << " finalY: " << finalY << " maxX: " << pixels[0].size() << " maxY: " << pixels.size() << endl;
-
-//   double rise = finalY - y;
-//   double run = finalX - x;
-//   if (run == 0) {
-//     for (int i = 0; i < pixels.size(); i++) {
-//       pixels[i][x] = 255;
-//     }
-//   } else if (rise == 0) {
-//     for (int i = 0; i < pixels[0].size(); i++) {
-//       pixels[y][i] = 255;
-//     }
-//   } else if (rise/run > 0 && abs(run) > abs(rise)) {
-//     int j = y;
-//     int e = abs(rise) - abs(run);
-//     for (int i = x; i < pixels[0].size(); i++) {
-//       if (j >= pixels.size()) {
-//         break;
-//       }
-//       pixels[j][i] = 255;
-//       if (e >= 0) {
-//         j += 1;
-//         e -= abs(run);
-//       }
-//       if (j >= pixels.size()) {
-//         break;
-//       }
-//       e += abs(rise);
-//     }
-//     j = y;
-//     for (int i = x; i >= 0; i--) {
-//       if (j < 0) {
-//         break;
-//       }
-//       pixels[j][i] = 255;
-//       if (e >= 0) {
-//         j -= 1;
-//         e -= abs(run);
-//       }
-//       if (j <= 0) {
-//         break;
-//       }
-//       e += abs(rise);
-//     }
-//   } else if ((rise/run) > 0 && abs(run) < abs(rise)) {
-//     int j = x;
-//     int e = abs(run) - abs(rise);
-//     for (int i = y; i < pixels.size(); i++) {
-//       if (j >= pixels[0].size()) {
-//         break;
-//       }
-//       pixels[i][j] = 255;
-//       if (e >= 0) {
-//         j += 1;
-//         e -= abs(rise);
-//       }
-//       if (j >= pixels[0].size()) {
-//         break;
-//       }
-//       e += abs(run);
-//     }
-//     j = x;
-//     for (int i = y; i >= 0; i--) {
-//       if (j < 0) {
-//         break;
-//       }
-//       pixels[i][j] = 255;
-//       if (e >= 0) {
-//         j -= 1;
-//         e -= abs(rise);
-//       }
-//       if (j < 0) {
-//         break;
-//       }
-//       e += abs(run);
-//     }
-      
-//   } else if ((rise/run) < 0 && abs(run) > abs(rise)) {
-//     int j = y;
-//     int e = abs(rise) - abs(run);
-//     for (int i = x; i >= 0; i--) {
-//       if (j >= pixels.size()) {
-//         break;
-//       }
-//       pixels[j][i] = 255;
-//       if (e >= 0) {
-//         j += 1;
-//         e -= abs(run);
-//       }
-//       if (j >= pixels.size()) {
-//         break;
-//       }
-//       e += abs(rise);
-//     }
-//     j = y;
-//     for (int i = x; i < pixels[0].size(); i++) {
-//       if (j < 0) {
-//         break;
-//       }
-//       pixels[j][i] = 255;
-//       if (e >= 0) {
-//         j -= 1;
-//         e -= abs(run);
-//       }
-//       if (j < 0) {
-//         break;
-//       }
-//       e += abs(rise);
-//     }
-//   } else if ((rise/run) < 0 && abs(run) < abs(rise)) {
-//     int j = x;
-//     int e = abs(run) - abs(rise);
-//     for (int i = y; i >= 0; i--) {
-//       if (j >= pixels[0].size()) {
-//         break;
-//       }
-//       pixels[i][j] = 255;
-//       if (e >= 0) {
-//         j += 1;
-//         e -= abs(rise);
-//       }
-//       if (j >= pixels.size()) {
-//         break;
-//       }
-//       e += abs(run);
-//     }
-//     j = x;
-//     for (int i = y; i < pixels.size(); i++) {
-//       if (j < 0) {
-//         break;
-//       }
-//       pixels[i][j] = 255;
-//       if (e >= 0) {
-//         j -= 1;
-//         e -= abs(rise);
-//       }
-//       if (j < 0) {
-//         break;
-//       }
-//       e += abs(run);
-//     }
-//   } else {
-//     cout << x << " " << y << " " << finalX << " " << finalY << " " << theta << endl;
-//     // cout << rise << " " << run << endl;
-//     // cout << (rise/run) << endl;
-//     // cout << (abs(run)) << " " << (abs(rise)) << endl;
-//     // cout << " " << endl;
-//   }
-//   return pixels;
-// }
-
-vector<vector<int>> centerDetection(vector<vector<int>> combined, vector<vector<double>> direction) {
+vector<vector<int>> centerDetection(vector<vector<int>> combined, vector<vector<double>> direction, int TC) {
   vector<vector<int>> pixels = combined;
-  // vector<vector<int>> voting = combined;
-  for (int i = 1; i < (int)combined.size() - 1; i++) {
-    for (int j = 1; j < (int)combined[i].size() - 1; j++) {
+  for (int i = 1; i < (int)(combined.size()); i++) {
+    for (int j = 1; j < (int)(combined[i].size()); j++) {
       if (combined[i][j] == 255) {
         pixels = drawLine(pixels, j, i, direction[i][j], combined);
-        // for (int k = 0; k < (int)combined.size(); k++) {
-        //   for (int l = 0; l < (int)combined[i].size(); l++) {
-        //     if (pixels[k][l] == 255) {
-        //       voting[k][l] += 5;
-        //     }
-        //   }
-        // }
+      }
+    }
+  }
+  for (int i = 0; i < (int)pixels.size(); i++) {
+    for (int j = 0; j < (int)pixels[i].size(); j++) {
+      if (combined[i][j] == 255) {
+        pixels[i][j] = 0;
       }
     }
   }
@@ -418,11 +247,10 @@ vector<vector<int>> centerDetection(vector<vector<int>> combined, vector<vector<
 }
 
 void part1(int argc, char* argv[]) {
-  int lowThreshold = 50;
-  int highThreshold = 70;
-  const char* inPPM = "image.ppm";
-  const char* finalOutPPM = "imagef.ppm";
-  int TC = 100;
+  int lowThreshold = 150;
+  int highThreshold = 200;
+  const char* inPPM = "image.ppm";  
+  int TC = 25;
 
   for (int i = 0; i < argc; i++) {
     if (string(argv[i]) == "-F") { inPPM = argv[i+1]; }
@@ -461,17 +289,47 @@ void part1(int argc, char* argv[]) {
   vector<vector<int>> pixelsRecurCanny = hysteresisAlgorithmRecursion(pixelsCanny, seen);
   vector<vector<int>> pixelsNMS = nonMaximumSuppression(pixelsSobel, pixelsDirection);
   vector<vector<int>> pixelsFinal = combinedHysteresisNMS(pixelsNMS, pixelsRecurCanny);
-  vector<vector<int>> pixelsCenter = centerDetection(pixelsFinal, pixelsDirection);
+  vector<vector<int>> pixelsCenter = centerDetection(pixelsFinal, pixelsDirection, TC);
 
-  ofstream FinalPPM(finalOutPPM);
+  ofstream FinalPPM("imagef.ppm");
   FinalPPM << "P3 " << width << " " << height << " " << maxval << endl;
   for (int i = 0; i < height; i++) {
     for (int j = 0; j < width; j++){
-      FinalPPM << pixelsCenter[i][j] << " " << pixelsCenter[i][j] << " " << pixelsCenter[i][j] << endl;
+      FinalPPM << pixelsFinal[i][j] << " " << pixelsFinal[i][j] << " " << pixelsFinal[i][j] << " ";
     }
   }
   FinalPPM.close();
+
+  ofstream Final2PPM("imagev.ppm");
+  Final2PPM << "P3 " << width << " " << height << " " << maxval << endl;
+  for (int i = 0; i < height; i++) {
+    for (int j = 0; j < width; j++){
+      Final2PPM << pixelsCenter[i][j] << " " << pixelsCenter[i][j] << " " << pixelsCenter[i][j] << " ";
+    }
+  }
+  Final2PPM.close();
+
+  for (int i = 0; i < (int)pixelsCenter.size(); i++) {
+    for (int j = 0; j < (int)pixelsCenter[i].size(); j++) {
+      if (pixelsCenter[i][j] >= TC) {
+        pixels[i][j][0] = 255;
+        pixels[i][j][1] = 0;
+        pixels[i][j][2] = 0;
+      }
+    }
+  }
+
+  ofstream Final3PPM("imageCC.ppm");
+  Final3PPM << "P3 " << width << " " << height << " " << maxval << endl;
+  for (int i = 0; i < height; i++) {
+    for (int j = 0; j < width; j++){
+      Final3PPM << pixels[i][j][0] << " " << pixels[i][j][1] << " " << pixels[i][j][2] << " ";
+    }
+  }
+  Final3PPM.close();
 }
+
+
 
 int main(int argc, char* argv[]) {
   part1(argc, argv);
