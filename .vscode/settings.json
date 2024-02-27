@@ -11,6 +11,8 @@
         "xtree": "cpp",
         "fstream": "cpp",
         "set": "cpp",
-        "cstdlib": "cpp"
+        "cstdlib": "cpp",
+        "tuple": "cpp",
+        "xiosbase": "cpp"
     }
 }

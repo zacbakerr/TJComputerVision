@@ -177,28 +177,27 @@ vector<vector<int>> combinedHysteresisNMS(vector<vector<int>> nms, vector<vector
 }
 
 vector<vector<int>> drawLine(vector<vector<int>> pixelsIn, int x0, int y0, double theta, vector<vector<int>> combined) {
-  vector<vector<int>> pixels = pixelsIn;
-
   int x1;
   int y1;
 
-  if (theta > 0 && theta < acos(-1)/2) {
+  double p = acos(-1);
+
+  if (theta > 0 && theta < p/2) {
     x1 = x0 - 1000;
     y1 = y0 - 1000 * tan(theta);
-  } else if (theta > acos(-1)/2 && theta < acos(-1)) {
+  } else if (theta > p/2 && theta < p) {
     x1 = x0 + 1000;
     y1 = y0 + 1000 * tan(theta);
-  } else if (theta < 0 && theta > -acos(-1)/2) {
+  } else if (theta < 0 && theta > -p/2) {
     x1 = x0 - 1000;
     y1 = y0 - 1000 * tan(theta);
-  } else if (theta < -acos(-1)/2 && theta > -acos(-1)) {
+  } else if (theta < -p/2 && theta > -p) {
     x1 = x0 + 1000;
     y1 = y0 + 1000 * tan(theta);
   } else {
     x1 = x0;
     y1 = y0;
   }
-
 
   int run = abs(x1 - x0);
   int rise = abs(y1 - y0);
@@ -208,23 +207,23 @@ vector<vector<int>> drawLine(vector<vector<int>> pixelsIn, int x0, int y0, doubl
   int counter = 0;
 
   while (true) {
-    if (x0 < 0 || x0 >= pixels[0].size() || y0 < 0 || y0 >= pixels.size()) {
+    if (x0 < 0 || x0 >= pixelsIn[0].size() || y0 < 0 || y0 >= pixelsIn.size()) {
       break;
     }
-    if (combined[y0][x0] == 255 && counter != 0) {
+    if (counter > 50) {
       break;
     }
     if (x0 == x1 && y0 == y1) {
       break;
     }
-    pixels[y0][x0] = pixels[y0][x0] + 5;
+    pixelsIn[y0][x0] = pixelsIn[y0][x0] + 5;
     int e2 = 2 * error;
     if (e2 > -rise) { error -= rise; x0 += slopesignx; }
     if (e2 < run) { error += run; y0 += slopesigny; }
     counter += 1;
   }
 
-  return pixels;
+  return pixelsIn;
 }
 
 vector<vector<int>> centerDetection(vector<vector<int>> combined, vector<vector<double>> direction, int TC) {
@@ -233,17 +232,20 @@ vector<vector<int>> centerDetection(vector<vector<int>> combined, vector<vector<
     for (int j = 1; j < (int)(combined[i].size()); j++) {
       if (combined[i][j] == 255) {
         pixels = drawLine(pixels, j, i, direction[i][j], combined);
-      }
-    }
-  }
-  for (int i = 0; i < (int)pixels.size(); i++) {
-    for (int j = 0; j < (int)pixels[i].size(); j++) {
-      if (combined[i][j] == 255) {
         pixels[i][j] = 0;
       }
     }
   }
   return pixels;
+}
+
+int gcd(int a, int b) {
+  while(b != 0) {
+    int tmp = a;
+    a = b;
+    b = tmp % b;
+  }
+  return a;
 }
 
 void part1(int argc, char* argv[]) {
@@ -282,9 +284,29 @@ void part1(int argc, char* argv[]) {
   }
 
   vector<vector<int>> pixelsGrey = greyScale(pixels);
-  vector<vector<int>> pixelsSobel = sobelOperatorMagnitude(pixelsGrey);
-  vector<vector<double>> pixelsDirection = sobelOperatorDirection(pixelsGrey);
-  vector<vector<int>> pixelsCanny = hysteresisAlgorithm(pixelsGrey, lowThreshold, highThreshold);
+
+  // int scale = gcd(width, height);
+  int scale = 6;
+  int newWidth = width/6;
+  int newHeight = height/6;
+  vector<vector<int>> pixelsGreyScaled;
+  for (int i = 0; i < newHeight; i++) {
+    vector<int> row;
+    pixelsGreyScaled.push_back(row);
+    for (int j = 0; j < newWidth; j++){
+      int sum = 0;
+      for (int k = 0; k < scale; k++) {
+        for (int l = 0; l < scale; l++) {
+          sum += pixelsGrey[i*scale + k][j*scale + l];
+        }
+      }
+      pixelsGreyScaled[i].push_back(sum/(scale*scale));
+    }
+  }
+
+  vector<vector<int>> pixelsSobel = sobelOperatorMagnitude(pixelsGreyScaled);
+  vector<vector<double>> pixelsDirection = sobelOperatorDirection(pixelsGreyScaled);
+  vector<vector<int>> pixelsCanny = hysteresisAlgorithm(pixelsGreyScaled, lowThreshold, highThreshold);
   set<int> seen = {};
   vector<vector<int>> pixelsRecurCanny = hysteresisAlgorithmRecursion(pixelsCanny, seen);
   vector<vector<int>> pixelsNMS = nonMaximumSuppression(pixelsSobel, pixelsDirection);
@@ -292,29 +314,29 @@ void part1(int argc, char* argv[]) {
   vector<vector<int>> pixelsCenter = centerDetection(pixelsFinal, pixelsDirection, TC);
 
   ofstream FinalPPM("imagef.ppm");
-  FinalPPM << "P3 " << width << " " << height << " " << maxval << endl;
-  for (int i = 0; i < height; i++) {
-    for (int j = 0; j < width; j++){
+  FinalPPM << "P3 " << newWidth << " " << newHeight << " " << maxval << endl;
+  for (int i = 0; i < newHeight; i++) {
+    for (int j = 0; j < newWidth; j++){
       FinalPPM << pixelsFinal[i][j] << " " << pixelsFinal[i][j] << " " << pixelsFinal[i][j] << " ";
     }
   }
   FinalPPM.close();
 
   ofstream Final2PPM("imagev.ppm");
-  Final2PPM << "P3 " << width << " " << height << " " << maxval << endl;
-  for (int i = 0; i < height; i++) {
-    for (int j = 0; j < width; j++){
+  Final2PPM << "P3 " << newWidth << " " << newHeight << " " << maxval << endl;
+  for (int i = 0; i < newHeight; i++) {
+    for (int j = 0; j < newWidth; j++){
       Final2PPM << pixelsCenter[i][j] << " " << pixelsCenter[i][j] << " " << pixelsCenter[i][j] << " ";
     }
   }
   Final2PPM.close();
 
-  for (int i = 0; i < (int)pixelsCenter.size(); i++) {
-    for (int j = 0; j < (int)pixelsCenter[i].size(); j++) {
+  for (int i = 0; i < newHeight; i++) {
+    for (int j = 0; j < newWidth; j++) {
       if (pixelsCenter[i][j] >= TC) {
-        pixels[i][j][0] = 255;
-        pixels[i][j][1] = 0;
-        pixels[i][j][2] = 0;
+        pixels[i*scale][j*scale][0] = 255;
+        pixels[i*scale][j*scale][1] = 0;
+        pixels[i*scale][j*scale][2] = 0;
       }
     }
   }

@@ -284,7 +284,7 @@ vector<vector<int>> refinedCenterDetection(vector<vector<int>> candidates, vecto
         }
         bool found = false;
         for (int k = 0; k < (int)circles.size(); k++) {
-          if (sqrt(pow(circles[k][0] - i, 2) + pow(circles[k][1] - j, 2)) < 20) {
+          if (sqrt(pow(circles[k][0] - i, 2) + pow(circles[k][1] - j, 2)) < 10) {
             if (circles[k][2] < 10 && bestR >= 10) {
               circles[k][0] = i;
               circles[k][1] = j;
@@ -304,7 +304,7 @@ vector<vector<int>> refinedCenterDetection(vector<vector<int>> candidates, vecto
             }
           }
         }
-        if (highestPercentage != 0 && !found) {
+        if (highestPercentage != 0 && !found && bestR >= 10) {
           vector<int> circle;
           circle.push_back(i);
           circle.push_back(j);
@@ -435,7 +435,7 @@ void part2(int argc, char* argv[]) {
   int highThreshold = 140;
   const char* inPPM = "image.ppm";
   const char* finalPPM = "imagef.ppm";
-  int TC = 40;
+  int TC = 30;
   int TCircle = 30;
   const char* vPPM = "imagev.ppm";
   const char* ccPPM = "imageCC.ppm";
@@ -560,11 +560,11 @@ void part2(int argc, char* argv[]) {
   int rmax = 180;
   
   vector<vector<int>> circles = refinedCenterDetection(pixelsGreyScaled, pixelsFinal, rmin/6, rmax/6);
-  for (int i = 0; i < (int)circles.size(); i++) {
-    if (circles[i][2] < 10) {
-      circles.erase(circles.begin() + i);
-    }
-  }
+  // for (int i = 0; i < (int)circles.size(); i++) {
+  //   if (circles[i][2] < 30) {
+  //     circles.erase(circles.begin() + i);
+  //   }
+  // }
   // for (int i = 0; i < (int)circles.size(); i++) {
   //   for (int j = 0; j < (int)circles.size(); j++) {
   //     if (i != j && sqrt(pow(circles[i][0] - circles[j][0], 2) + pow(circles[i][1] - circles[j][1], 2)) < 20) {
