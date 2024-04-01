@@ -13,6 +13,7 @@
         "set": "cpp",
         "cstdlib": "cpp",
         "tuple": "cpp",
-        "xiosbase": "cpp"
+        "xiosbase": "cpp",
+        "xlocmes": "cpp"
     }
 }

@@ -284,7 +284,7 @@ vector<vector<int>> refinedCenterDetection(vector<vector<int>> candidates, vecto
         }
         bool found = false;
         for (int k = 0; k < (int)circles.size(); k++) {
-          if (sqrt(pow(circles[k][0] - i, 2) + pow(circles[k][1] - j, 2)) < 10) {
+          if (sqrt(pow(circles[k][0] - i, 2) + pow(circles[k][1] - j, 2)) < 5) {
             if (circles[k][2] < 10 && bestR >= 10) {
               circles[k][0] = i;
               circles[k][1] = j;
@@ -431,12 +431,12 @@ void part1(int argc, char* argv[]) {
 }
 
 void part2(int argc, char* argv[]) {
-  int lowThreshold = 90;
-  int highThreshold = 140;
+  int lowThreshold = 70;
+  int highThreshold = 100;
   const char* inPPM = "image.ppm";
   const char* finalPPM = "imagef.ppm";
-  int TC = 30;
-  int TCircle = 30;
+  int TC = 25;
+  int TCircle = 25;
   const char* vPPM = "imagev.ppm";
   const char* ccPPM = "imageCC.ppm";
   const char* circlesPPM = "imageCircles.ppm";
@@ -478,19 +478,6 @@ void part2(int argc, char* argv[]) {
 
   vector<vector<int>> pixelsGrey = greyScale(pixels);
 
-  vector<vector<int>> pixelsGaussian = pixelsGrey;
-  for (int i = 4; i < (int)pixelsGrey.size() - 4; i++) {
-    for (int j = 4; j < (int)pixelsGrey[i].size() - 4; j++) {
-      int sum = 0;
-      for (int k = 0; k < 9; k++) {
-        for (int l = 0; l < 9; l++) {
-          sum += pixelsGrey[i-4+k][j-4+l];
-        }
-      }
-      pixelsGaussian[i][j] = sum/81;
-    }
-  }
-
   int scale = 6;
   int newWidth = width/6;
   int newHeight = height/6;
@@ -502,16 +489,30 @@ void part2(int argc, char* argv[]) {
       int sum = 0;
       for (int k = 0; k < scale; k++) {
         for (int l = 0; l < scale; l++) {
-          sum += pixelsGaussian[i*scale + k][j*scale + l];
+          sum += pixelsGrey[i*scale + k][j*scale + l];
         }
       }
       pixelsGreyScaled[i].push_back(sum/(scale*scale));
     }
   }
 
-  vector<vector<int>> pixelsSobel = sobelOperatorMagnitude(pixelsGreyScaled);
-  vector<vector<double>> pixelsDirection = sobelOperatorDirection(pixelsGreyScaled);
-  vector<vector<int>> pixelsCanny = hysteresisAlgorithm(pixelsGreyScaled, lowThreshold, highThreshold);
+  vector<vector<int>> gaussian = pixelsGreyScaled;
+  float kernal[5][5] = {{2, 4, 5, 4, 2}, {4, 9, 12, 9, 4}, {5, 12, 15, 12, 5}, {4, 9, 12, 9, 4}, {2, 4, 5, 4, 2}};
+  for (int i = 2; i < (int)pixelsGreyScaled.size() - 2; i++) {
+    for (int j = 2; j < (int)pixelsGreyScaled[i].size() - 2; j++) {
+      float sum = 0;
+      for (int k = 0; k < 5; k++) {
+        for (int l = 0; l < 5; l++) {
+          sum += pixelsGreyScaled[i-2+k][j-2+l] * kernal[k][l];
+        }
+      }
+      gaussian[i][j] = sum/159;
+    }
+  }
+
+  vector<vector<int>> pixelsSobel = sobelOperatorMagnitude(gaussian);
+  vector<vector<double>> pixelsDirection = sobelOperatorDirection(gaussian);
+  vector<vector<int>> pixelsCanny = hysteresisAlgorithm(gaussian, lowThreshold, highThreshold);
   set<int> seen = {};
   vector<vector<int>> pixelsRecurCanny = hysteresisAlgorithmRecursion(pixelsCanny, seen);
   vector<vector<int>> pixelsNMS = nonMaximumSuppression(pixelsSobel, pixelsDirection);
@@ -560,22 +561,16 @@ void part2(int argc, char* argv[]) {
   int rmax = 180;
   
   vector<vector<int>> circles = refinedCenterDetection(pixelsGreyScaled, pixelsFinal, rmin/6, rmax/6);
-  // for (int i = 0; i < (int)circles.size(); i++) {
-  //   if (circles[i][2] < 30) {
-  //     circles.erase(circles.begin() + i);
-  //   }
-  // }
-  // for (int i = 0; i < (int)circles.size(); i++) {
-  //   for (int j = 0; j < (int)circles.size(); j++) {
-  //     if (i != j && sqrt(pow(circles[i][0] - circles[j][0], 2) + pow(circles[i][1] - circles[j][1], 2)) < 20) {
-  //       if (circles[i][2] < circles[j][2]) {
-  //         circles.erase(circles.begin() + i);
-  //       } else {
-  //         circles.erase(circles.begin() + j);
-  //       }
-  //     }
-  //   }
-  // }
+  for (int i = 0; i < (int)circles.size(); i++) {
+    for (int j = 0; j < (int)circles.size(); j++) {
+      if (i != j) {
+        if (sqrt(pow(circles[i][0] - circles[j][0], 2) + pow(circles[i][1] - circles[j][1], 2)) < 5) {
+          circles.erase(circles.begin() + j);
+        }
+      }
+    }
+  }
+
 
   double cost = 0;
   int numPennies = 0;

@@ -1,4 +1,4 @@
-Cost: $12.61
-Pennies: 141
-Nickels: 9
-Quarters: 43
+Cost: $2.68
+Pennies: 88
+Nickels: 1
+Quarters: 7
