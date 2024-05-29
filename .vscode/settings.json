@@ -14,6 +14,16 @@
         "cstdlib": "cpp",
         "tuple": "cpp",
         "xiosbase": "cpp",
-        "xlocmes": "cpp"
+        "xlocmes": "cpp",
+        "array": "cpp",
+        "format": "cpp",
+        "istream": "cpp",
+        "memory": "cpp",
+        "type_traits": "cpp",
+        "utility": "cpp",
+        "xlocmon": "cpp",
+        "xlocnum": "cpp",
+        "xloctime": "cpp",
+        "xutility": "cpp"
     }
 }

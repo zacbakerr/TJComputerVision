@@ -32,3 +32,19 @@ The labs I completed as part of the computer vision course I took during my seni
     - Implement the hysteresis algorithm with a low and high threshold
 - Part 3
     - Implement non-max supression and hysteresis + non-max supression
+
+### Lab 6: Coin Detection
+- Part 1
+    - Identify center candidates for all coins
+- Part 2
+     - Identify each coin and its amount
+- Part 3
+    - Refine code from part 3
+
+### Lab 7: Coin Detection with OpenCV
+- Part 1
+    - Implement the code from lab 6 using OpenCV
+
+### Lab 8: Projection and rotation of shapes onto different planes using OpenCV
+
+### Lab 9: Augmented reality using OpenCV
